@@ -15,7 +15,7 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public ResponseEntity<Response> register(RegistrationReq request) {
-
+        //todo: дописать регистрацию
         return null;
     }
 

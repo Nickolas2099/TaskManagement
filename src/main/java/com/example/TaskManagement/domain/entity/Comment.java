@@ -2,29 +2,34 @@ package com.example.TaskManagement.domain.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.GrantedAuthority;
+import org.hibernate.annotations.CurrentTimestamp;
 
-@Table(name = "role_table")
+import java.sql.Timestamp;
+
+@Table(name = "comment")
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Role implements GrantedAuthority {
+public class Comment {
 
     @Id
     Integer id;
 
-    String title;
+    String commentText;
 
-    @Override
-    public String getAuthority() {
-        return title;
-    }
+    @CurrentTimestamp
+    Timestamp creationTime;
+
+    @ManyToOne
+    User user;
+
 }
