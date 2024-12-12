@@ -12,4 +12,5 @@ public class Error {
 
     private Code code;
     private String techMessage;
+    private Object details;
 }

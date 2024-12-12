@@ -1,17 +1,29 @@
 spring:
+
   application:
     name: TaskManagement
+
   flyway:
     enabled: true
     url: jdbc:postgresql://localhost:5432/task_management
     schemas: task_management
     user: task_management
     password: task_management
+
   datasource:
     url: jdbc:postgresql://localhost:5432/task_management
     username: task_management
     password: task_management
 
+  jpa:
+    properties:
+      hibernate:
+        dialect: PostgreSQLDialect
+    show-sql: false
 
 jwt:
   secret: 138db8460d427616a1abe40668b026fbcd239a08d1a9eada29949587b0061ef022138e37692060bb3dc46bf9a893ad943338ca9f2c1f3529e892d6372e2dfd012157d15134d94c10d4c727ccbb20c715e4ce3b2a93d3952046eb7c71be3a2eb93058338a485035d0580810fbfc1f6d2532c3c5470d793ba654b56a4a16100656587ad4d5cb449cd0fe0b469a9625f893319fc2c496dec0166bb763f52644996202d9410c9caa3bce876f7795cf1c5b6a9bdbfa15668653d111e534de47e78a5f008bd5c28c07e03ed73a3a06b57cc7f04ba4e6a287f2b40e649fb5c74eb441031fa9fd29a504efcc7450890d6a912694f94550b2a49c617b62abe3f1cd31475e
+
+logging:
+  level:
+    root: INFO

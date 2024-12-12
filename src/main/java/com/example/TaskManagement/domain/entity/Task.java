@@ -18,23 +18,26 @@ import java.util.List;
 public class Task {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
     String heading;
 
     String description;
 
-    String status;
+    @ManyToOne
+    Status status;
 
-    String priority;
-
-    @OneToMany
-    List<Comment> comments;
+    @ManyToOne
+    Priority priority;
 
     @ManyToOne
     User createdBy;
 
     @ManyToOne
     User assignedTo;
+
+    @OneToMany
+    List<Comment> comments;
 
 }
