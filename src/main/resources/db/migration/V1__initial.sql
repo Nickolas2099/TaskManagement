@@ -22,21 +22,6 @@ CREATE TABLE user_role
     FOREIGN KEY (role_id) REFERENCES role_table(id)
 );
 
-CREATE TABLE task
-(
-    id          SERIAL PRIMARY KEY,
-    heading     VARCHAR(255) UNIQUE NOT NULL,
-    description VARCHAR(255)        NOT NULL,
-    status_id   VARCHAR(255)        NOT NULL,
-    priority_id VARCHAR(255)        NOT NULL,
-    created_by  SERIAL              NOT NULL,
-    assigned_to SERIAL              NOT NULL,
-    FOREIGN KEY (status_id)   REFERENCES status(id),
-    FOREIGN KEY (priority_id) REFERENCES priority(id),
-    FOREIGN KEY (created_by)  REFERENCES user_table(id),
-    FOREIGN KEY (assigned_to) REFERENCES user_table(id)
-);
-
 CREATE TABLE status
 (
     id    SERIAL PRIMARY KEY,
@@ -47,6 +32,21 @@ CREATE TABLE priority
 (
     id    SERIAL PRIMARY KEY,
     title VARCHAR(255) UNIQUE NOT NULL
+);
+
+CREATE TABLE task
+(
+    id          SERIAL PRIMARY KEY,
+    heading     VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255)        NOT NULL,
+    status_id   INTEGER             NOT NULL,
+    priority_id INTEGER             NOT NULL,
+    created_by  SERIAL              NOT NULL,
+    assigned_to SERIAL              NOT NULL,
+    FOREIGN KEY (status_id)   REFERENCES status(id),
+    FOREIGN KEY (priority_id) REFERENCES priority(id),
+    FOREIGN KEY (created_by)  REFERENCES user_table(id),
+    FOREIGN KEY (assigned_to) REFERENCES user_table(id)
 );
 
 CREATE TABLE comment
