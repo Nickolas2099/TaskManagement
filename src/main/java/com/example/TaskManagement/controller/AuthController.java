@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public ResponseEntity<Response> register(@RequestBody RegistrationReq request) {
 
         log.info("START endpoint register, request: {}", request);
@@ -29,7 +29,7 @@ public class AuthController {
         return response;
     }
 
-    @PostMapping("authenticate")
+    @PostMapping("/authenticate")
     public ResponseEntity<Response> authenticate(@RequestBody AuthenticationReq request) {
 
         log.info("START endpoint authenticate, request: {}", request);
