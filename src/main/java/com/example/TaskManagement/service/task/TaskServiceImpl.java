@@ -1,6 +1,6 @@
 package com.example.TaskManagement.service.task;
 
-import com.example.TaskManagement.domain.api.task.TaskSaveReq;
+import com.example.TaskManagement.domain.api.task.TaskReq;
 import com.example.TaskManagement.domain.constant.Code;
 import com.example.TaskManagement.domain.entity.Priority;
 import com.example.TaskManagement.domain.entity.Status;
@@ -15,7 +15,7 @@ import com.example.TaskManagement.repository.PriorityRepository;
 import com.example.TaskManagement.repository.StatusRepository;
 import com.example.TaskManagement.repository.TaskRepository;
 import com.example.TaskManagement.repository.UserRepository;
-import com.example.TaskManagement.service.security.JwtService;
+import com.example.TaskManagement.service.security.utility.UtilitySecurityService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,14 +34,14 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TaskServiceImpl implements TaskService {
 
-    JwtService jwtService;
+    UtilitySecurityService securityService;
     TaskRepository taskRepository;
     UserRepository userRepository;
     StatusRepository statusRepository;
     PriorityRepository priorityRepository;
 
     @Override
-    public ResponseEntity<Response> getTasksByAuthor(String authorEmail, Integer page, Integer size) {
+    public ResponseEntity<Response> getByAuthor(String authorEmail, Integer page, Integer size) {
 
         Pageable pageable = PageRequest.of(page, size);
         User author = userRepository.findByEmail(authorEmail).orElseThrow(
@@ -58,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ResponseEntity<Response> getTasksByAssignment(String executorEmail, Integer page, Integer size) {
+    public ResponseEntity<Response> getByAssignment(String executorEmail, Integer page, Integer size) {
 
         Pageable pageable = PageRequest.of(page, size);
         User executor = userRepository.findByEmail(executorEmail).orElseThrow(
@@ -75,17 +74,16 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public ResponseEntity<Response> editTask(String heading, Task task) { //TODO: заменить Entity на DTO
+    public ResponseEntity<Response> edit(Integer id, TaskReq task) {
 
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findByEmail(email).get();
-        boolean isAdmin = jwtService.isAdmin();
+        User user = securityService.getCurrentUser();
+        Task origTask = taskRepository.getTaskById(id).orElseThrow(
+                () -> new EntityNotFoundException("Task haven't found")
+        );
+        boolean isAdmin = securityService.isAdmin();
 
-        if(isAdmin || user.equals(task.getCreatedBy())) {
+        if(isAdmin || user.equals(origTask.getCreatedBy())) {
 
-            Task origTask = taskRepository.getTaskByHeading(heading).orElseThrow(
-                    () -> new EntityNotFoundException("Task not found with heading: " + heading)
-            );
             updateTaskFields(origTask, task, isAdmin);
             return new ResponseEntity<>(SuccessResponse.builder().data(origTask).build(), HttpStatus.OK);
 
@@ -100,43 +98,61 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    private void updateTaskFields(Task origTask, Task task, boolean isAdmin) {
-        if (task.getHeading() != null) {
+    private void updateTaskFields(Task origTask, TaskReq task, boolean isAdmin) {
             origTask.setHeading(task.getHeading());
-        }
-        if (task.getDescription() != null) {
             origTask.setDescription(task.getDescription());
-        }
-        if (task.getStatus() != null) {
-            origTask.setStatus(task.getStatus());
-        }
-        if (task.getPriority() != null) {
-            origTask.setPriority(task.getPriority());
-        }
-        if (task.getAssignedTo() != null && isAdmin) {
-            origTask.setAssignedTo(task.getAssignedTo());
+            origTask.setStatus(statusRepository.getStatusById(task.getStatusId()).orElseThrow(
+                    () -> new EntityNotFoundException("Status with id haven't found")
+            ));
+            origTask.setPriority(priorityRepository.getPriorityById(task.getPriorityId()).orElseThrow(
+                    () -> new EntityNotFoundException("Priority with id haven't found")
+            ));
+        if (isAdmin) {
+            origTask.setAssignedTo(userRepository.findById(task.getExecutorId()).orElseThrow(
+                    () -> new EntityNotFoundException("Executor with id haven't found")
+            ));
         }
     }
 
     @Override
-    public ResponseEntity<Response> saveTask(TaskSaveReq task) {
+    public ResponseEntity<Response> save(TaskReq task) {
 
+        User user = securityService.getCurrentUser();
         taskRepository.save(task.getHeading(), task.getDescription(),
                 task.getStatusId(), task.getPriorityId(),
-                task.getAuthorId(), task.getExecutorId());
+                user.getId(), task.getExecutorId());
         return new ResponseEntity<>(SuccessResponse.builder().build(), HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<Response> delete(Integer id) {
+
+        Task task = taskRepository.getTaskById(id).orElseThrow(
+                () -> new EntityNotFoundException("Task haven't found by id: " + id)
+        );
+        User user = securityService.getCurrentUser();
+        if(securityService.isAdmin() || user.equals(task.getCreatedBy())) {
+            taskRepository.deleteById(id);
+            return new ResponseEntity<>(SuccessResponse.builder().build(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(ErrorResponse.builder()
+                    .error(Error.builder()
+                            .techMessage("There are not enough permissions to delete this task")
+                            .code(Code.FORBIDDEN)
+                            .build())
+                    .build(), HttpStatus.FORBIDDEN);
+        }
     }
 
     @Override
     public ResponseEntity<Response> changePriority(String heading, String priorityTitle) {
 
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findByEmail(email).get();
+        User user = securityService.getCurrentUser();
         Task task = taskRepository.getTaskByHeading(heading).orElseThrow(
                 () -> new EntityNotFoundException("Task haven't found with heading: " + heading)
         );
 
-        if(jwtService.isAdmin() || task.getCreatedBy().equals(user)) {
+        if(securityService.isAdmin() || task.getCreatedBy().equals(user)) {
 
             Priority priority = priorityRepository.getPrioritiesByTitle(priorityTitle).orElseThrow(
                     () -> new EntityNotFoundException("Priority haven't found with title: " + priorityTitle)
@@ -169,13 +185,12 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResponseEntity<Response> changeStatus(String heading, String statusTitle) {
 
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findByEmail(email).get();
+        User user = securityService.getCurrentUser();
         Task task = taskRepository.getTaskByHeading(heading).orElseThrow(
                 () -> new EntityNotFoundException("Task haven't found with heading: " + heading)
         );
 
-        if(jwtService.isAdmin() || task.getCreatedBy().equals(user)) {
+        if(securityService.isAdmin() || task.getCreatedBy().equals(user)) {
 
             Status status = statusRepository.getStatusByTitle(statusTitle).orElseThrow(
                     () -> new EntityNotFoundException("Status haven't found with title: " + statusTitle)

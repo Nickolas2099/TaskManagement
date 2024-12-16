@@ -1,6 +1,5 @@
 package com.example.TaskManagement.service.auth;
 
-import com.example.TaskManagement.config.AppConfig;
 import com.example.TaskManagement.domain.api.auth.AuthResp;
 import com.example.TaskManagement.domain.api.auth.AuthenticationReq;
 import com.example.TaskManagement.domain.api.auth.RegistrationReq;
@@ -13,7 +12,7 @@ import com.example.TaskManagement.domain.response.error.Error;
 import com.example.TaskManagement.domain.response.error.ErrorResponse;
 import com.example.TaskManagement.repository.RoleRepository;
 import com.example.TaskManagement.repository.UserRepository;
-import com.example.TaskManagement.service.security.JwtService;
+import com.example.TaskManagement.service.security.jwt.JwtService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

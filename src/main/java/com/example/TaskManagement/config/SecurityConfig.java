@@ -1,6 +1,6 @@
 package com.example.TaskManagement.config;
 
-import com.example.TaskManagement.service.security.JwtAuthFilter;
+import com.example.TaskManagement.service.security.jwt.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

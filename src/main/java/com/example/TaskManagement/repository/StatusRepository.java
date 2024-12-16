@@ -8,4 +8,7 @@ import java.util.Optional;
 public interface StatusRepository extends CrudRepository<Status, Integer> {
 
     Optional<Status> getStatusByTitle(String Title);
+
+    Optional<Status> getStatusById(Integer id);
+
 }

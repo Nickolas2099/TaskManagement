@@ -1,5 +1,6 @@
-package com.example.TaskManagement.service.security;
+package com.example.TaskManagement.service.security.jwt;
 
+import com.example.TaskManagement.service.security.jwt.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

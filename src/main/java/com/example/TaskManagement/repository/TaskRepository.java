@@ -18,6 +18,8 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     Optional<Task> getTaskByHeading(String heading);
 
+    Optional<Task> getTaskById(Integer id);
+
     @Query(nativeQuery = true, value = """
         INSERT INTO task(heading, description, statusId, priorityId, authorId, executorId)
         VALUES(:heading, :description, :statusId, :priorityId, :authorId, :executorId)

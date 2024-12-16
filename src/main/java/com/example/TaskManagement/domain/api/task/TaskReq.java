@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TaskSaveReq {
+public class TaskReq {
 
     @Size(max = 255)
     @NotBlank(message = "heading is required")
@@ -26,9 +26,6 @@ public class TaskSaveReq {
 
     @NotBlank(message = "priority is required")
     Integer priorityId;
-
-    @NotNull(message = "authorEmail is required")
-    Integer authorId;
 
     @NotNull(message = "executorEmail is required")
     Integer executorId;
