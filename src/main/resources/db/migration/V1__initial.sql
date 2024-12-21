@@ -61,7 +61,7 @@ CREATE TABLE comment
 );
 
 
-INSERT INTO status(title) VALUES('в ожижании'),
+INSERT INTO status(title) VALUES('в ожидании'),
                                 ('в процессе'),
                                 ('завершено');
 

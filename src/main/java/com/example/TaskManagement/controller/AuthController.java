@@ -26,7 +26,7 @@ public class AuthController {
 
         log.info("START endpoint register, request: {}", request);
         ResponseEntity<Response> response = authService.register(request);
-        log.info("END endpoint register, response: {}", response);
+        log.info("END endpoint register");
         return response;
     }
 
@@ -35,7 +35,7 @@ public class AuthController {
 
         log.info("START endpoint authenticate, request: {}", request);
         ResponseEntity<Response> response = authService.authenticate(request);
-        log.info("END endpoint authenticate, response: {}", response);
+        log.info("END endpoint authenticate");
         return response;
     }
 

@@ -101,26 +101,43 @@ public class TaskServiceImpl implements TaskService {
     private void updateTaskFields(Task origTask, TaskReq task, boolean isAdmin) {
             origTask.setHeading(task.getHeading());
             origTask.setDescription(task.getDescription());
-            origTask.setStatus(statusRepository.getStatusById(task.getStatusId()).orElseThrow(
+            origTask.setStatus(statusRepository.getStatusByTitle(task.getStatusTitle()).orElseThrow(
                     () -> new EntityNotFoundException("Status with id haven't found")
             ));
-            origTask.setPriority(priorityRepository.getPriorityById(task.getPriorityId()).orElseThrow(
+            origTask.setPriority(priorityRepository.getPriorityByTitle(task.getPriorityTitle()).orElseThrow(
                     () -> new EntityNotFoundException("Priority with id haven't found")
             ));
         if (isAdmin) {
-            origTask.setAssignedTo(userRepository.findById(task.getExecutorId()).orElseThrow(
+            origTask.setAssignedTo(userRepository.findByEmail(task.getExecutorEmail()).orElseThrow(
                     () -> new EntityNotFoundException("Executor with id haven't found")
             ));
         }
     }
 
     @Override
-    public ResponseEntity<Response> save(TaskReq task) {
+    public ResponseEntity<Response> save(TaskReq req) {
 
-        User user = securityService.getCurrentUser();
-        taskRepository.save(task.getHeading(), task.getDescription(),
-                task.getStatusId(), task.getPriorityId(),
-                user.getId(), task.getExecutorId());
+        Status status = statusRepository.getStatusByTitle(req.getStatusTitle()).orElseThrow(
+                () -> new EntityNotFoundException("status haven't found with title: " + req.getStatusTitle())
+        );
+        Priority priority = priorityRepository.getPriorityByTitle(req.getPriorityTitle()).orElseThrow(
+                () -> new EntityNotFoundException("priority haven't found with title: " + req.getPriorityTitle())
+        );
+        User author = securityService.getCurrentUser();
+        User executor = userRepository.findByEmail(req.getExecutorEmail()).orElseThrow(
+                () -> new EntityNotFoundException("user haven't found with email: " + req.getExecutorEmail())
+        );
+
+        taskRepository.save(Task
+                        .builder()
+                        .heading(req.getHeading())
+                        .description(req.getDescription())
+                        .status(status)
+                        .priority(priority)
+                        .createdBy(author)
+                        .assignedTo(executor)
+                        .build()
+        );
         return new ResponseEntity<>(SuccessResponse.builder().build(), HttpStatus.CREATED);
     }
 
@@ -154,7 +171,7 @@ public class TaskServiceImpl implements TaskService {
 
         if(securityService.isAdmin() || task.getCreatedBy().equals(user)) {
 
-            Priority priority = priorityRepository.getPrioritiesByTitle(priorityTitle).orElseThrow(
+            Priority priority = priorityRepository.getPriorityByTitle(priorityTitle).orElseThrow(
                     () -> new EntityNotFoundException("Priority haven't found with title: " + priorityTitle)
             );
             if(task.getPriority().equals(priority)) {

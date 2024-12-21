@@ -1,7 +1,7 @@
 package com.example.TaskManagement.domain.api.task;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,12 +21,13 @@ public class TaskReq {
     @NotBlank(message = "description is required")
     String description;
 
-    @NotBlank(message = "statusId is required")
-    Integer statusId;
+    @NotBlank(message = "statusTitle is required")
+    String statusTitle;
 
-    @NotBlank(message = "priority is required")
-    Integer priorityId;
+    @NotBlank(message = "priorityTitle is required")
+    String priorityTitle;
 
-    @NotNull(message = "executorEmail is required")
-    Integer executorId;
+    @Email
+    @NotBlank(message = "executorEmail is required")
+    String executorEmail;
 }

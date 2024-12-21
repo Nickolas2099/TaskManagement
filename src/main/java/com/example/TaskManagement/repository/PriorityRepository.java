@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface PriorityRepository extends CrudRepository <Priority, Integer> {
 
-    Optional<Priority> getPrioritiesByTitle(String title);
+    Optional<Priority> getPriorityByTitle(String title);
 
     Optional<Priority> getPriorityById(Integer id);
 }

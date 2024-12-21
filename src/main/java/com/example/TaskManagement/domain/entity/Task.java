@@ -1,10 +1,7 @@
 package com.example.TaskManagement.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
@@ -12,6 +9,7 @@ import java.util.List;
 @Table(name = "task")
 @Entity
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -32,12 +30,14 @@ public class Task {
     Priority priority;
 
     @ManyToOne
+    @JoinColumn(name = "created_by")
     User createdBy;
 
     @ManyToOne
+    @JoinColumn(name = "assigned_to")
     User assignedTo;
 
-    @OneToMany
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Comment> comments;
 
 }

@@ -20,13 +20,13 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     Optional<Task> getTaskById(Integer id);
 
-    @Query(nativeQuery = true, value = """
-        INSERT INTO task(heading, description, statusId, priorityId, authorId, executorId)
+    /*@Query(nativeQuery = true, value = """
+        INSERT INTO task(heading, description, status_id, priority_id, created_by, assigned_to)
         VALUES(:heading, :description, :statusId, :priorityId, :authorId, :executorId)
     """)
     void save(@Param("heading") String heading, @Param("description") String description,
               @Param("statusId") Integer statusId, @Param("priorityId") Integer priorityId,
-              @Param("authorId") Integer authorId, @Param("executorId") Integer executorId);
+              @Param("authorId") Integer authorId, @Param("executorId") Integer executorId);*/
 
 
 }

@@ -25,9 +25,6 @@ public class UtilitySecurityServiceImpl implements UtilitySecurityService {
 
     @Override
     public User getCurrentUser() {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepo.findByEmail(email).orElseThrow(
-                () -> new EntityNotFoundException("User haven't found with email: " + email)
-        );
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

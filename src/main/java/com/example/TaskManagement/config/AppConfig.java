@@ -18,8 +18,6 @@ public class AppConfig {
 
     private final UserRepository userRepository;
 
-
-
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> userRepository.findByEmail(email)

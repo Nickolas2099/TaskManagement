@@ -28,4 +28,7 @@ public class Comment {
     @ManyToOne
     User user;
 
+    @ManyToOne
+    @JoinColumn(name = "task_id")
+    Task task;
 }

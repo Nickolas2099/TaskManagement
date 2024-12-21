@@ -7,9 +7,7 @@ import org.springframework.http.ResponseEntity;
 public interface CommentService {
 
     ResponseEntity<Response> save(Integer taskId, CommentReq text);
-    ResponseEntity<Response> edit(Integer id);
+    ResponseEntity<Response> edit(Integer id, CommentReq text);
     ResponseEntity<Response> delete(Integer id);
-    ResponseEntity<Response> getByTask(String heading);
-
 
 }
