@@ -3,6 +3,7 @@ package com.example.TaskManagement.domain.response.exception;
 import com.example.TaskManagement.domain.constant.Code;
 import com.example.TaskManagement.domain.response.error.Error;
 import com.example.TaskManagement.domain.response.error.ErrorResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,16 @@ public class ErrorHandler {
         log.error("internal server error: {}", ex.toString());
         return new ResponseEntity<>(ErrorResponse.builder().error(Error.builder().code(Code.INTERNAL_SERVER_ERROR)
                 .techMessage("Внутренняя ошибка сервиса").build()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException ex) {
+        log.error("Entity not found: {}", ex.toString());
+        return new ResponseEntity<>(ErrorResponse.builder().error(Error
+                .builder()
+                .code(Code.NOT_FOUND)
+                .techMessage(ex.getMessage())
+                .build()).build(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
