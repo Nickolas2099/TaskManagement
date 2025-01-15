@@ -27,3 +27,7 @@ jwt:
 logging:
   level:
     root: INFO
+
+springdoc:
+  api-docs:
+    enabled: true
